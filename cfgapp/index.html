@@ -1,0 +1,447 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>ClK</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+<body ng-app="my-app">
+    <div id="first-loading" class="loading loading-lg"></div>
+    <div class="container ng-cloak" ng-cloak ng-controller="navbarcontroller">
+        <div class="columns">
+            <div class="column col-12">
+                <ul class="tab tab-block">
+                    <li class="tab-item" ng-class="{ 'active': active == 'clock'}" ng-click="active = 'clock'">
+                        <a href="#clock">Relógio</a>
+                    </li>
+                    <li class="tab-item" ng-class="{ 'active': active == 'light'}" ng-click="active = 'light'">
+                        <a href="#light">Luz</a>
+                    </li>
+                    <li class="tab-item" ng-class="{ 'active': active == 'music'}" ng-click="active = 'music'">
+                        <a href="#music">Música</a>
+                    </li>
+                    <li class="tab-item" ng-class="{ 'active': active == 'wifi'}" ng-click="active = 'wifi'">
+                        <a href="#wifi">WiFi</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="columns" ng-if="active == 'clock'">
+            <div class="column col-12" ng-controller="clockcontroller">
+                <div class="columns">
+                    <div class="column col-4 col-md-12">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <h4>Horas</h4>
+                                    <div class="columns">
+                                        <div class="column col-1 hide-md"></div>
+                                        <div class="column col-11">
+                                            <label>{{clocktime | date:'HH:mm:ss dd/MM/yyyy' }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="columns">
+                                    <div class="column col-1 hide-md"></div>
+                                    <div class="column col-4 col-md-5">
+                                        <div picker date="time" options="timepickeroptions"></div>
+                                    </div>
+                                    <div class="column col-6 col-md-7">
+                                        <div picker date="time" options="datepickeroptions"></div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column col-1"></div>
+                                    <div class="column col-4">
+                                        <button class="btn btn-primary btn-block" ng-click="systemTime()">Hora Actual</button>
+                                    </div>
+                                    <div class="column col-6">
+                                        <button class="btn btn-primary btn-block" ng-click="saveTime()">Guardar Alterações</button>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <!-- buttons or inputs -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column col-8 col-md-12">
+                        <div class="panel" ng-show="alarms.length">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <h4>Alarmes</h4>
+                                </div>
+                            </div>
+                            <div class="panel-body alarms-panel-body">
+                                <div class="columns">
+                                    <div class="column col-3 col-md-12">
+                                        <ul class="menu">
+                                            <!-- menu item -->
+                                            <li class="menu-item" ng-repeat="a in alarms">
+                                                <button class="btn btn-link btn-block alarm-btn" ng-click="selectAlarm(a)" ng-class="{selected: alarm == a, }">
+                                                    Alarme {{$index + 1}}
+                                                    <i class="icon icon-check float-right" ng-show="a.enabled"></i>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="column show-md col-md-12 m-2 p-2">
+                                    </div>
+                                    <div class="column col-9 col-md-12" ng-show="alarm != null">
+                                        <div class="form-group">
+                                            <label class="form-switch">
+                                                <input type="checkbox" ng-model="alarm.enabled"></input>
+                                                <i class="form-icon"></i> activo
+                                            </label>
+                                        </div>
+                                        <div class="columns">
+                                            <div class="column col-4 col-md-12">
+                                                <div class="panel">
+                                                    <div class="panel-title p-2">
+                                                        <h5>Dias da semana</h5>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        <div class="columns">
+                                                            <div class="column col-4"></div>
+                                                            <div class="column col-4">
+                                                                <button class="btn btn-link btn-block dow-button" ng-class="{selected: isDowSelected(alarm, 0)}" ng-click="dowClick(alarm, 0)">Dom</button>
+                                                            </div>
+                                                            <div class="column col-4">
+                                                                <button class="btn btn-link btn-block dow-button" ng-class="{selected: isDowSelected(alarm, 1)}" ng-click="dowClick(alarm, 1)">Seg</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="columns">
+                                                            <div class="column col-4">
+                                                                <button class="btn btn-link btn-block dow-button" ng-class="{selected: isDowSelected(alarm, 2)}" ng-click="dowClick(alarm, 2)">Ter</button>
+                                                            </div>
+                                                            <div class="column col-4">
+                                                                <button class="btn btn-link btn-block dow-button" ng-class="{selected: isDowSelected(alarm, 3)}" ng-click="dowClick(alarm, 3)">Qua</button>
+                                                            </div>
+                                                            <div class="column col-4">
+                                                                <button class="btn btn-link btn-block dow-button" ng-class="{selected: isDowSelected(alarm, 4)}" ng-click="dowClick(alarm, 4)">Qui</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="columns">
+                                                            <div class="column col-4">
+                                                                <button class="btn btn-link btn-block dow-button" ng-class="{selected: isDowSelected(alarm, 5)}" ng-click="dowClick(alarm, 5)">Sex</button>
+                                                            </div>
+                                                            <div class="column col-4">
+                                                                <button class="btn btn-link btn-block dow-button" ng-class="{selected: isDowSelected(alarm, 6)}" ng-click="dowClick(alarm, 6)">Sab</button>
+                                                            </div>
+                                                            <div class="column col-4"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="column col-8 col-md-12">
+                                                <div picker date="alarm.time" options="alarmpickeroptions"></div>
+                                            </div>
+                                        </div>
+                                        <div class="columns">
+                                            <div class="column col-6">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="light-1">Luz</label>
+                                                    <select id="light-1" class="form-select">
+                                                        <option>Escolher estilo</option>
+                                                        <option>Slack</option>
+                                                        <option>Skype</option>
+                                                        <option>Hipchat</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="column col-6">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="music-1">Musica</label>
+                                                    <select id="music-1" class="form-select">
+                                                        <option>Escolher estilo</option>
+                                                        <option>Slack</option>
+                                                        <option>Skype</option>
+                                                        <option>Hipchat</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="columns">
+                                            <div class="column col-12">
+                                                <button class="btn btn-primary btn-block" ng-click="saveTime()">Guardar Alterações</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="columns" ng-if="active == 'light'">
+            <div class="column col-12" ng-controller="lightcontroller">
+                <div class="columns">
+                    <div class="column col-3 col-md-12">
+                        <ul class="menu">
+                            <li class="divider" data-content="Perfis sistema"></li>
+                            <li class="menu-item" ng-repeat="l in systemlight">
+                                <button class="btn btn-link btn-block alarm-btn" ng-click="selectLight(l)" ng-class="{selected: light == l }">
+                                    {{l.name}}
+                                </button>
+                            </li>
+                            <li class="divider" data-content="Perfis personalizados" ng-show="customLight.light.length"></li>
+                            <li class="menu-item" ng-repeat="l in customLight.light">
+                                <button class="btn btn-link btn-block alarm-btn" ng-click="selectLight(l)" ng-class="{selected: light == l }">
+                                    {{l.name}}
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="column show-md col-md-12 m-2 p-2">
+                    </div>
+                    <div class="column col-9 col-md-12" ng-show="light != null">
+                        <div class="panel p-2">
+                            <div class="panel-title p-2">
+                                <h4>{{light.name}}</h4>
+                            </div>
+                            <div class="panel-body">
+                                <div class="columns" ng-repeat="s in light.states">
+                                    <div class="column hide-md col-1"></div>
+                                    <div class="column col-2 col-md-6">
+                                        <label class="form-label" for="custom-light-dur-{{$index}}">Duração</label>
+                                    </div>
+                                    <div class="column col-3 col-md-6">
+                                        <input class="form-input" type="number" id="custom-light-dur-{{$index}}" ng-model="s.duration">
+                                    </div>
+                                    <div class="column hide-md col-1"></div>
+                                    <div class="column col-2 col-md-6">
+                                        <label class="form-label" for="custom-color-dur-{{$index}}">Cor</label>
+                                    </div>
+                                    <div class="column col-3 col-md-6">
+                                        <input class="form-input" type="color" id="custom-color-dur-{{$index}}" ng-model="s.css_rgb">
+                                    </div>
+                                    <div class="column col-md-12 show-md">
+                                        <div class="divider"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="columns" ng-if="active == 'music'">
+            <div class="column col-12" ng-controller="musiccontroller">Music</div>
+        </div>
+        <div class="columns" ng-if="active == 'wifi'">
+            <div class="column col-12" ng-controller="wificontroller">
+                <div class="columns p-2">
+                    <div class="column col-6 col-md-12">
+                        <div class="panel mb-2">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <h4>Informação de Rede</h4>
+                                </div>
+                            </div>
+                            <div class="panel-body wifi-panel">
+                                <div class="form-group ">
+                                    <label class="form-label">SSID</label>
+                                    <div>{{wifi.SSID}}</div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Nome cliente</label>
+                                    <div>{{wifi.Hostname}}</div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Endereço IP</label>
+                                    <div>{{wifi.IP}}</div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Endereço MAC</label>
+                                    <div>{{wifi.MAC}}</div>
+                                </div>
+                                <div class="form-group ">
+                                    <label class="form-label">Sinal</label>
+                                    <div class="bar">
+                                        <div class="bar-item" role="progressbar" style="width:{{signalStrengthPercent()}}%;" ng-show="wifi != null">{{signalStrength()}} ({{wifi.RSSI}}db)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel p-2">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <h4>MQTT</h4>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label class="form-label" for="mqtt-server">Servidor</label>
+                                    <input class="form-input" type="text" id="mqtt-server" placeholder="IP" ng-model="mqqt.server">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="mqtt-subscribe">Subscrever Topico</label>
+                                    <input class="form-input" type="text" id="mqtt-subscribe" placeholder="Subscrever Topico" ng-model="mqtt.subscribe">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="mqtt-publish">Publicar Topico</label>
+                                    <input class="form-input" type="text" id="mqtt-publish" placeholder="Publicar Topico" ng-model="mqtt.publish">
+                                </div>
+                                <button class="btn btn-primary btn-block" ng-click="saveMQTTConfig()">Guardar Alterações</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column col-6 col-md-12">
+                        <div class="panel p-2">
+                            <div class="panel-header">
+                                <div class="panel-title">
+                                    <h4>Redes</h4>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group m-1">
+                                    <select class="form-select" ng-options="n for n in networks.networks" ng-model="ssid" size="10">
+                                    </select>
+                                    <button class="btn btn-primary btn-block" ng-class="{loading: scanning}" ng-click="refreshNetworks()">Pesquisar redes</button>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="ssid-1">SSID</label>
+                                    <input class="form-input" type="text" id="ssid-1" placeholder="SSID" ng-model="ssid">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="passwd-1">Palavra chave</label>
+                                    <input class="form-input" type="password" id="passwd-1" placeholder="Palavra chave" ng-model="password">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="hostname-1">Nome cliente</label>
+                                    <input class="form-input" type="text" id="hostname-1" placeholder="Nome cliente" ng-model="hostname">
+                                </div>
+                                <button class="btn btn-primary btn-block" ng-class="{disabled: (ssid == '' || password == '')}" ng-click="saveNetworkConfig()">Guardar Alterações</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--
+    <div class="loading" id="loading">
+        <svg width="120" height="120" viewBox="0 0 57 57" xmlns="http://www.w3.org/2000/svg" stroke="#fff">
+            <g fill="none" fill-rule="evenodd">
+                <g transform="translate(1 1)" stroke-width="2">
+                    <circle cx="5" cy="50" r="5">
+                        <animate attributeName="cy" begin="0s" dur="2.2s" values="50;5;50;50" calcMode="linear" repeatCount="indefinite" />
+                        <animate attributeName="cx" begin="0s" dur="2.2s" values="5;27;49;5" calcMode="linear" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="27" cy="5" r="5">
+                        <animate attributeName="cy" begin="0s" dur="2.2s" from="5" to="5" values="5;50;50;5" calcMode="linear" repeatCount="indefinite"
+                        />
+                        <animate attributeName="cx" begin="0s" dur="2.2s" from="27" to="27" values="27;49;5;27" calcMode="linear" repeatCount="indefinite"
+                        />
+                    </circle>
+                    <circle cx="49" cy="50" r="5">
+                        <animate attributeName="cy" begin="0s" dur="2.2s" values="50;50;5;50" calcMode="linear" repeatCount="indefinite" />
+                        <animate attributeName="cx" from="49" to="49" begin="0s" dur="2.2s" values="49;5;27;49" calcMode="linear" repeatCount="indefinite"
+                        />
+                    </circle>
+                </g>
+            </g>
+        </svg>
+    </div>
+    <div id="tabs" class="tabs hide">
+        <ul>
+            <li>
+                <a href="#tabs-1">Relógio</a>
+            </li>
+            <li>
+                <a href="#tabs-2">Som</a>
+            </li>
+            <li>
+                <a href="#tabs-3">Luz</a>
+            </li>
+        </ul>
+        <div id="tabs-1">
+            <div class="segment">
+                <h2>Relógio</h2>
+                <div class="timedate">
+                    <div class="time">
+                        <label>Hora </label>
+                        <div class="time-picker"></div>
+                    </div>
+                    <div class="date">
+                        <label>Data </label>
+                        <div class="date-picker"></div>
+                    </div>
+                </div>
+                <div>
+                    <button id="saveTimeDate" class="btn">Guardar Alterações</button>
+                </div>
+            </div>
+            <div class="segment">
+                <h2>Alarmes</h2>
+                <div class="alarmcontainer">
+                    <div class="alarmbtncontainer">
+                        <button class="btn alarmbtn">Alarme 1</button>
+                        <button class="btn alarmbtn">Alarme 2</button>
+                        <button class="btn alarmbtn">Alarme 3</button>
+                        <button class="btn alarmbtn">Alarme 4</button>
+                        <button class="btn alarmbtn">Alarme 5</button>
+                        <button class="btn alarmbtn">Alarme 6</button>
+                        <button class="btn alarmbtn">Alarme 7</button>
+                        <button class="btn alarmbtn">Alarme 8</button>
+                        <button class="btn alarmbtn">Alarme 9</button>
+                        <button class="btn alarmbtn">Alarme 10</button>
+                    </div>
+                    <div class="alarmconfigcontainer">
+                        <div>
+
+                        </div>
+                        <ul class="dowcontainer">
+                            <li></li>
+                            <li class="dow dom">Dom</li>
+                            <li class="dow seg">Seg</li>
+                            <li class="dow ter">Ter</li>
+                            <li class="dow qua">Qua</li>
+                            <li class="dow qui">Qui</li>
+                            <li class="dow sex">Sex</li>
+                            <li class="dow sab">Sab</li>
+                            <li></li>
+                        </ul>
+
+                        <div class="alarm-time-picker"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="tabs-2">
+            <div>Morbi tincidunt, dui sit amet facilisis feugiat, odio metus gravida ante, ut pharetra massa metus id nunc. Duis
+                scelerisque molestie turpis. Sed fringilla, massa eget luctus malesuada, metus eros molestie lectus, ut tempus
+                eros massa ut dolor. Aenean aliquet fringilla sem. Suspendisse sed ligula in ligula suscipit aliquam. Praesent
+                in eros vestibulum mi adipiscing adipiscing. Morbi facilisis. Curabitur ornare consequat nunc. Aenean vel
+                metus. Ut posuere viverra nulla. Aliquam erat volutpat. Pellentesque convallis. Maecenas feugiat, tellus
+                pellentesque pretium posuere, felis lorem euismod felis, eu ornare leo nisi vel felis. Mauris consectetur
+                tortor et purus.</div>
+        </div>
+        <div id="tabs-3">
+            <div>Mauris eleifend est et turpis. Duis id erat. Suspendisse potenti. Aliquam vulputate, pede vel vehicula accumsan,
+                mi neque rutrum erat, eu congue orci lorem eget lorem. Vestibulum non ante. Class aptent taciti sociosqu
+                ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce sodales. Quisque eu urna vel enim commodo
+                pellentesque. Praesent eu risus hendrerit ligula tempus pretium. Curabitur lorem enim, pretium nec, feugiat
+                nec, luctus a, lacus.</div>
+            <div>Duis cursus. Maecenas ligula eros, blandit nec, pharetra at, semper at, magna. Nullam ac lacus. Nulla facilisi.
+                Praesent viverra justo vitae neque. Praesent blandit adipiscing velit. Suspendisse potenti. Donec mattis,
+                pede vel pharetra blandit, magna ligula faucibus eros, id euismod lacus dolor eget odio. Nam scelerisque.
+                Donec non libero sed nulla mattis commodo. Ut sagittis. Donec nisi lectus, feugiat porttitor, tempor ac,
+                tempor vitae, pede. Aenean vehicula velit eu tellus interdum rutrum. Maecenas commodo. Pellentesque nec elit.
+                Fusce in lacus. Vivamus a libero vitae lectus hendrerit hendrerit.</div>
+        </div>
+    </div>
+-->
+    <script src="script.js"></script>
+</body>
+
+</html>
